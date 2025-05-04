@@ -1,7 +1,5 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 
-static SEARCH_TEXT: (&str, &str) = ("XMAS", "SMAX");
-
 #[aoc_generator(day4)]
 fn generate_p1(input: &str) -> Vec<Vec<char>>{
     return input.lines().map(|x| x.chars().collect()).collect();
