@@ -2,8 +2,8 @@ use aoc_runner_derive::{aoc, aoc_generator};
 use ndarray::array;
 use ndarray_linalg::Solve;
 
-#[aoc_generator(day13)]
-fn get_input(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>){ 
+#[aoc_generator(day13, part1)]
+fn get_input_one(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>){ 
     let mut button_a: Vec<(f64, f64)> = vec![];
     let mut button_b: Vec<(f64, f64)> = vec![];
     let mut prize: Vec<(f64, f64)> = vec![];
@@ -32,10 +32,39 @@ fn get_input(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)
     return (button_a, button_b, prize)
 }
 
+#[aoc_generator(day13, part2)]
+fn get_input_two(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>){ 
+    let mut button_a: Vec<(f64, f64)> = vec![];
+    let mut button_b: Vec<(f64, f64)> = vec![];
+    let mut prize: Vec<(f64, f64)> = vec![];
+    
+    for line in input.lines() {
+        if line.contains("A:") {
+            let nline = &line.replace("Button A: X+", "");
+            let nline = &nline.replace(" Y+", "");
+            let xy: Vec<&str> = nline.split(',').collect();
+            button_a.push((xy[0].parse().unwrap(), xy[1].parse().unwrap()));
+        }
+        else if line.contains("Prize") {
+            let nline = &line.replace("Prize: X=", "");
+            let nline = &nline.replace(" Y=", "");
+            let xy: Vec<&str> = nline.split(',').collect();
+            prize.push((xy[0].parse::<f64>().unwrap() + 10000000000000.0, xy[1].parse::<f64>().unwrap() + 10000000000000.0));
+        }
+        else if line.contains("B:") {
+            let nline = &line.replace("Button B: X+", "");
+            let nline = &nline.replace(" Y+", "");
+            let xy: Vec<&str> = nline.split(',').collect();
+            button_b.push((xy[0].parse().unwrap(), xy[1].parse().unwrap()));
+        }
+    }
+    
+    return (button_a, button_b, prize)
+}
+
 // could improve massively by using a struct instead of vectors to store input
 //also massive improvement if I use specific case of Cramer's law instead of broad.
-#[aoc(day13, part1)]
-fn dec12_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+fn dec13_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
 
     let (button_a, button_b, prize) = input;
     let calc = button_a.iter().zip(button_b).zip(prize);
@@ -74,16 +103,43 @@ fn dec12_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
     final_ans
 }
 
+#[aoc(day13, part1)]
+fn dec13_1_better(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+    dec13_better(input)
+}
 
 #[aoc(day13, part2)]
-fn dec12_2(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+fn dec13_2_better(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+    dec13_better(input)
+}
+
+fn dec13_better(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+
+    let (axy, bxy, pxy) = input;
+    let calc = axy.iter().zip(bxy).zip(pxy);
+    let mut fin_ans = 0.0;
+    for (((ax, ay), (bx, by)), (px, py)) in calc {
+        let d = ax * by - ay * bx;
+        let di = px * by - py * bx;
+        let dj = py * ax - px * ay;
+
+        if di % d == 0.0 && dj % d == 0.0 {
+            fin_ans += 3.0 * di/d + dj/d;
+        } 
+    }
+
+    fin_ans
+}
+
+//Leaving my original inefficient solution here
+fn dec13_2(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
 
     let (button_a, button_b, prize) = input;
     let calc = button_a.iter().zip(button_b).zip(prize);
     let mut final_ans: f64 = 0f64;
     for ((a, b), prize) in calc {
         let matr = array![[a.0, b.0], [a.1, b.1]];
-        let ans = array![prize.0 + 10000000000000f64, prize.1 + 10000000000000f64];
+        let ans = array![prize.0, prize.1];
         let x = matr.solve(&ans);
         final_ans += match x {
             Ok(lmao) => {
@@ -125,15 +181,15 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input_filtered = get_input(SMALL_INPUT);
-        let ans = dec12_1(&input_filtered);
+        let input_filtered = get_input_one(SMALL_INPUT);
+        let ans = dec13_1(&input_filtered);
         assert_eq!(480f64, ans);
     }
 
     #[test]
     fn test_part2() {
-        let input_filtered = get_input(SMALL_INPUT);
-        let ans = dec12_2(&input_filtered);
+        let input_filtered = get_input_two(SMALL_INPUT);
+        let ans = dec13_2(&input_filtered);
         assert_eq!(480f64, ans);
     }
 
