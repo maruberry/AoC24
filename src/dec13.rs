@@ -32,6 +32,8 @@ fn get_input(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)
     return (button_a, button_b, prize)
 }
 
+// could improve massively by using a struct instead of vectors to store input
+//also massive improvement if I use specific case of Cramer's law instead of broad.
 #[aoc(day13, part1)]
 fn dec12_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
 
