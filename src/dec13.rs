@@ -1,6 +1,6 @@
 use aoc_runner_derive::{aoc, aoc_generator};
-use ndarray::array;
-use ndarray_linalg::Solve;
+//use ndarray::array;
+//use ndarray_linalg::Solve;
 
 #[aoc_generator(day13, part1)]
 fn get_input_one(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>){ 
@@ -64,44 +64,44 @@ fn get_input_two(input: &str) -> (Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f6
 
 // could improve massively by using a struct instead of vectors to store input
 //also massive improvement if I use specific case of Cramer's law instead of broad.
-fn dec13_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+// fn dec13_1(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
 
-    let (button_a, button_b, prize) = input;
-    let calc = button_a.iter().zip(button_b).zip(prize);
-    let mut final_ans: f64 = 0f64;
-    for ((a, b), prize) in calc {
-        let matr = array![[a.0, b.0], [a.1, b.1]];
-        let ans = array![prize.0, prize.1];
-        let x = matr.solve(&ans);
-        final_ans += match x {
-            Ok(lmao) => {
-                if lmao[0] >= 0f64 && lmao[1] >= 0f64 {
-                    let mut a = 0f64;
-                    let mut b = 0f64;
-                    if lmao[0].fract() < 0.0000000001 {
-                        a = lmao[0].trunc( );
-                    }
-                    if lmao[0].fract() > 0.9999999999 {
-                        a = lmao[0].ceil();
-                    }
-                    if lmao[1].fract() < 0.0000000001 {
-                        b = lmao[1].trunc( );
-                    }
-                    if lmao[1].fract() > 0.9999999999 {
-                        b = lmao[1].ceil();
-                    }
-                    //println!("{} and {}", a, b);
-                    a * 3f64 + b
-                }
-                else {
-                    0f64
-                }
-            },
-            Err(_) => 0f64,
-        }
-    }
-    final_ans
-}
+//     let (button_a, button_b, prize) = input;
+//     let calc = button_a.iter().zip(button_b).zip(prize);
+//     let mut final_ans: f64 = 0f64;
+//     for ((a, b), prize) in calc {
+//         let matr = array![[a.0, b.0], [a.1, b.1]];
+//         let ans = array![prize.0, prize.1];
+//         let x = matr.solve(&ans);
+//         final_ans += match x {
+//             Ok(lmao) => {
+//                 if lmao[0] >= 0f64 && lmao[1] >= 0f64 {
+//                     let mut a = 0f64;
+//                     let mut b = 0f64;
+//                     if lmao[0].fract() < 0.0000000001 {
+//                         a = lmao[0].trunc( );
+//                     }
+//                     if lmao[0].fract() > 0.9999999999 {
+//                         a = lmao[0].ceil();
+//                     }
+//                     if lmao[1].fract() < 0.0000000001 {
+//                         b = lmao[1].trunc( );
+//                     }
+//                     if lmao[1].fract() > 0.9999999999 {
+//                         b = lmao[1].ceil();
+//                     }
+//                     //println!("{} and {}", a, b);
+//                     a * 3f64 + b
+//                 }
+//                 else {
+//                     0f64
+//                 }
+//             },
+//             Err(_) => 0f64,
+//         }
+//     }
+//     final_ans
+// }
 
 #[aoc(day13, part1)]
 fn dec13_1_better(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
@@ -132,64 +132,65 @@ fn dec13_better(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> 
 }
 
 //Leaving my original inefficient solution here
-fn dec13_2(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
+// fn dec13_2(input: &(Vec<(f64, f64)>, Vec<(f64, f64)>, Vec<(f64, f64)>)) -> f64{
 
-    let (button_a, button_b, prize) = input;
-    let calc = button_a.iter().zip(button_b).zip(prize);
-    let mut final_ans: f64 = 0f64;
-    for ((a, b), prize) in calc {
-        let matr = array![[a.0, b.0], [a.1, b.1]];
-        let ans = array![prize.0, prize.1];
-        let x = matr.solve(&ans);
-        final_ans += match x {
-            Ok(lmao) => {
-                if lmao[0] >= 0f64 && lmao[1] >= 0f64{
-                    let mut a = 0f64;
-                    let mut b = 0f64;
-                    if lmao[0].fract() < 0.0001 {
-                        a = lmao[0].trunc( );
-                    }  
-                    if lmao[0].fract() > 0.9999 {
-                        a = lmao[0].ceil();
-                    }
-                    if lmao[1].fract() < 0.0001 {
-                        b = lmao[1].trunc( );
-                    }
-                    if lmao[1].fract() > 0.9999 {
-                        b = lmao[1].ceil();
-                    }
-                    //println!("{} and {}", a, b);
-                    if a != 0.0 && b != 0.0 {
-                        a * 3f64 + b
-                    }
-                    else {
-                        0.0
-                    }
-                }
-                else {
-                    0f64
-                }
-            },
-            Err(_) => 0f64,
-        }
-    }
-    final_ans
-}
+//     let (button_a, button_b, prize) = input;
+//     let calc = button_a.iter().zip(button_b).zip(prize);
+//     let mut final_ans: f64 = 0f64;
+//     for ((a, b), prize) in calc {
+//         let matr = array![[a.0, b.0], [a.1, b.1]];
+//         let ans = array![prize.0, prize.1];
+//         let x = matr.solve(&ans);
+//         final_ans += match x {
+//             Ok(lmao) => {
+//                 if lmao[0] >= 0f64 && lmao[1] >= 0f64{
+//                     let mut a = 0f64;
+//                     let mut b = 0f64;
+//                     if lmao[0].fract() < 0.0001 {
+//                         a = lmao[0].trunc( );
+//                     }  
+//                     if lmao[0].fract() > 0.9999 {
+//                         a = lmao[0].ceil();
+//                     }
+//                     if lmao[1].fract() < 0.0001 {
+//                         b = lmao[1].trunc( );
+//                     }
+//                     if lmao[1].fract() > 0.9999 {
+//                         b = lmao[1].ceil();
+//                     }
+//                     //println!("{} and {}", a, b);
+//                     if a != 0.0 && b != 0.0 {
+//                         a * 3f64 + b
+//                     }
+//                     else {
+//                         0.0
+//                     }
+//                 }
+//                 else {
+//                     0f64
+//                 }
+//             },
+//             Err(_) => 0f64,
+//         }
+//     }
+//     final_ans
+// }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
         let input_filtered = get_input_one(SMALL_INPUT);
-        let ans = dec13_1(&input_filtered);
+        let ans = dec13_1_better(&input_filtered);
         assert_eq!(480f64, ans);
     }
 
     #[test]
     fn test_part2() {
         let input_filtered = get_input_two(SMALL_INPUT);
-        let ans = dec13_2(&input_filtered);
+        let ans = dec13_2_better(&input_filtered);
         assert_eq!(480f64, ans);
     }
 

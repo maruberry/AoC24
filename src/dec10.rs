@@ -116,8 +116,20 @@ fn dec10_2(input: &(Map, Vec<Point>)) -> usize{
     answer
 }
 
+#[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{get_input, dec10_1, dec10_2};
+
+    const TEST_INPUT:&str = 
+"89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732
+";
 
     #[test]
     fn test_part1() {
@@ -132,15 +144,4 @@ mod tests {
         let ans = dec10_2(&input_filtered);
         assert_eq!(81, ans);
     }
-
-    const TEST_INPUT:&str = 
-"89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732
-";
 }

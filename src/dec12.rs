@@ -30,7 +30,6 @@ struct Pos{
 impl Pos {
     fn successors(&self) -> Vec<Pos> {
         let Pos{x, y, map, fence: _} = self.clone();
-        let c = map[y][x];
         let mut next: Vec<Pos> = vec![];
         let neighbors = Pos::get_neighbours(x, y, &map);
         for (xn, yn) in neighbors {
@@ -59,16 +58,14 @@ impl Pos {
 fn dec12_1(garden: &Vec<Vec<char>>) -> usize{
     let mut all_plots: Vec<(usize, usize)> = vec![];
     let mut answer: usize = 0;
-    let mut fence = 4 - Pos::get_neighbours(1, 1, garden).len();
-    let mut start = Pos{x: 1, y: 1, map: garden.clone(), fence};
     for (mut i, line) in garden[1..garden.len()-1].iter().enumerate() {
         i += 1;
-        for (mut j, flower) in line[1..line.len()-1].iter().enumerate() {
+        for (mut j, _flower) in line[1..line.len()-1].iter().enumerate() {
             j += 1;
             if !all_plots.contains(&(j, i)) {
-                fence = 4 - Pos::get_neighbours(j, i, garden).len();
-                start = Pos{x: j, y: i, map: garden.clone(), fence};
-                let mut smth = bfs_reach(start.clone(), |p| p.successors()).collect::<Vec<_>>();
+                let fence = 4 - Pos::get_neighbours(j, i, garden).len();
+                let start = Pos{x: j, y: i, map: garden.clone(), fence};
+                let smth = bfs_reach(start.clone(), |p| p.successors()).collect::<Vec<_>>();
                 let mut plot = smth
                     .iter()
                     .map(|x| (x.x, x.y))
@@ -86,6 +83,7 @@ fn dec12_1(garden: &Vec<Vec<char>>) -> usize{
 }
  
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -95,13 +93,6 @@ mod tests {
         let ans = dec12_1(&input_filtered);
         assert_eq!(1930, ans);
     }
-
-    const SMALL_INPUT:&str = 
-"OOOOO
-OXOXO
-OOOOO
-OXOXO
-OOOOO";
 
     const TEST_INPUT:&str = 
 "RRRRIICCFF

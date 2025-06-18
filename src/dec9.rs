@@ -119,6 +119,7 @@ fn calc_answer(ans_string: &[String]) -> u128 {
         .sum()
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 

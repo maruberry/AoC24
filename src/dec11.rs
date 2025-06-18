@@ -23,7 +23,6 @@ fn dec11_1(input: &Vec<String>) -> usize{
 
 struct Next {
     n_nums: Vec<u128>,
-    how_many: usize,
 }
 
 #[aoc(day11, part2)]
@@ -58,7 +57,6 @@ fn calc_next(num: u128) -> Next{
     if num == 0u128 {
         return Next {
             n_nums: vec![1],
-            how_many: 0,
         }
     }
     else if num.to_string().len() % 2 == 0 {
@@ -68,18 +66,17 @@ fn calc_next(num: u128) -> Next{
         if b == "" { b = "0"}
         return Next {
             n_nums: vec![a.parse().unwrap(), b.parse().unwrap()],
-            how_many: 0,
         }
     }
     else {
         //println!("trying to multiply with {}", answer[i]);
         return Next {
             n_nums: vec![num * 2024u128],
-            how_many: 0,
         }
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
