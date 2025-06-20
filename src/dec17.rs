@@ -5,17 +5,17 @@ use itertools::Itertools;
 fn get_input(input: &str) -> Computer {
     let (registers_long, program_long) = input.split_once("\n\n").unwrap();
     let regtemp = registers_long.split("\n").collect::<Vec<&str>>();
-    let reg_vec: Vec<i128> = regtemp.iter()
+    let reg_vec: Vec<u128> = regtemp.iter()
         .map(|f| f[12..]
-            .parse::<i128>()
+            .parse::<u128>()
             .unwrap()
         )
         .collect();
 
-    let program: Vec<i128> = program_long[9..]
+    let program: Vec<u128> = program_long[9..]
         .split(',')
         .map(|f| f
-            .parse::<i128>()
+            .parse::<u128>()
             .unwrap()
         )
         .collect();
@@ -26,23 +26,23 @@ fn get_input(input: &str) -> Computer {
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct Registers {
-    a: i128,
-    b: i128,
-    c: i128
+    a: u128,
+    b: u128,
+    c: u128
 }
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct Computer {
     registers: Registers,
-    program: Vec<i128>,
+    program: Vec<u128>,
     index: usize,
-    out: Vec<i128>
+    out: Vec<u128>
 }
 
 impl Computer {
-    fn combo_value(&self) -> i128{
-        match self.program[self.index + 1] {
-           0..=3 =>  self.program[self.index + 1],
+    fn combo_value(&self, literal: u128) -> u128{
+        match literal {
+           0..=3 =>  literal,
            4 => self.registers.a,
            5 => self.registers.b,
            6 => self.registers.c,
@@ -52,9 +52,9 @@ impl Computer {
 
     fn adv(&mut self) {
         //println!("adv aka 0");
-        let combo_operand: u32 = self.combo_value() as u32;
-        let pwr = 2i128.pow(combo_operand);
-        if pwr == 0 {self.out.push(-4); return}
+        let combo_operand: u32 = self.combo_value(self.program[self.index + 1]) as u32;
+        let pwr = 2u128.pow(combo_operand);
+        //if pwr == 0 {self.out.push(-4); return}
         let num = self.registers.a / pwr;
         self.registers.a = num;
         self.index += 2;
@@ -62,14 +62,14 @@ impl Computer {
 
     fn bxl(&mut self) {
         //println!("bxl aka 1");
-        let num = self.registers.b as i128 ^ self.program[self.index + 1] as i128;
-        self.registers.b = num as i128;
+        let num = self.registers.b as u128 ^ self.program[self.index + 1] as u128;
+        self.registers.b = num as u128;
         self.index += 2;
     }
 
     fn bst(&mut self) {
         //println!("bst aka 2");
-        let combo_operand: i128 = self.combo_value();
+        let combo_operand: u128 = self.combo_value(self.program[self.index + 1]);
         let num = combo_operand % 8;
         self.registers.b = num;
         self.index += 2;
@@ -83,14 +83,14 @@ impl Computer {
 
     fn bxc(&mut self) {
         //println!("bxc aka 4") ;
-        let num = self.registers.b as i128 ^ self.registers.c as i128;
-        self.registers.b = num as i128;
+        let num = self.registers.b as u128 ^ self.registers.c as u128;
+        self.registers.b = num as u128;
         self.index += 2;
     }
 
     fn out(&mut self) {
         //println!("out aka 5");
-        let combo_operand: i128 = self.combo_value();
+        let combo_operand: u128 = self.combo_value(self.program[self.index + 1]);
         self.out.push(combo_operand % 8);
         //println!("{}", combo_operand % 8);
         self.index += 2;
@@ -98,10 +98,10 @@ impl Computer {
 
     fn bdv(&mut self) {
         //println!("bdv aka 6");
-        let combo_operand: u32 = self.combo_value() as u32;
+        let combo_operand: u32 = self.combo_value(self.program[self.index + 1]) as u32;
         println!("combo {}", combo_operand);
-        let pwr = 2i128.pow(combo_operand);
-        if pwr == 0 {self.out.push(-4); return}
+        let pwr = 2u128.pow(combo_operand);
+        //if pwr == 0 {self.out.push(-4); return}
         let num = self.registers.a / pwr;
         self.registers.b = num;
         self.index += 2;
@@ -109,9 +109,9 @@ impl Computer {
 
     fn cdv(&mut self) {
         //println!("cdv aka 7");
-        let combo_operand: u32 = self.combo_value() as u32;
-        let pwr = 2i128.pow(combo_operand);
-        if pwr == 0 {self.out.push(-4); return}
+        let combo_operand: u32 = self.combo_value(self.program[self.index + 1]) as u32;
+        let pwr = 2u128.pow(combo_operand);
+        //if pwr == 0 {self.out.push(-4); return}
         let num = self.registers.a / pwr;
         self.registers.c = num;
         self.index += 2;
@@ -141,146 +141,188 @@ fn dec17_1(input: &Computer) -> String{
         index: input.index.clone(),
         out: input.out.clone()
     };
-    //println!("{:?}", computer.program);
     while computer.index + 1 < computer.program.len(){
         computer.choose_program();
     }
-
     let out = computer.out;
     out.iter().join(",")
 }
 
 
 #[aoc(day17, part2)]
-fn dec17_2(input: &Computer) -> i128{
+fn dec17_2(input: &Computer) -> u128{
     let mut computer = Computer {
         registers: input.registers.clone(),
         program: input.program.clone(),
         index: input.index.clone(),
         out: input.out.clone()
     };
-    //println!("{:?}", computer.program);
     let mut visited: Vec<usize> = vec![];
-    let mut counter = 0;
     let mut loops: u32 = 0;
-    println!("WE ARE STARTING");
+    let mut prev = 0;
+    let mut index = 0;
+    let mut operand = 0;
+    computer.registers.a = 35184372088832;
+    let mut counter = 0;
     while computer.index + 1 < computer.program.len(){
-        //The program ends when A hits 0 (It will make no more jumps and thus will just... run to the end)
-        //The value of A will also never be influenced by one of the registers even though it is TECHNICALLY possible
-        //But it would make this task end far too quick
-        //This is how we will find a minimum POSSIBLE value of A
-        //From there I think it is reasonable to start just trying values
-        //Could also assign a MAXIMUM possible value?
-        if visited.contains(&computer.index) {
-            println!("This loops after {} steps", counter);
-            println!("In our loop we print out {} number(s)", computer.out.len());
+
+        if visited.contains(&computer.index){
             loops = (computer.program.len()/computer.out.len()) as u32;
             println!("We need to make {} loops", loops);
             break;
         }
-        counter += 1;
+
         visited.push(computer.index);
         computer.choose_program();
-    }
-    //finding out where and how the value of our A is being influenced. A is being divided by either 2, 4 or 8
-    //the operand of adv will never be 0 because 2^0 = 1 and then the value of a would just never change
-    //the operand of adv will also never be larger than 3, because then it would use a register for the power 
-    //and the loops would end REAAAAL quick (Or alternatively b and c will remain 0 forever)
-    //if bdv or cdv ever happens is when values get very large and if they do not, it will remain 0
-    let mut div = 1;
-    for val in &visited {
-        if computer.program[*val] == 0 {
-            let num = 2i128.pow(computer.program[val + 1] as u32);
-            div *= num;
+
+        if prev != computer.registers.a {
+            computer.registers.a = computer.registers.a;
+            prev = computer.registers.a;
+            operand = counter;
+            println!("Operand is {}", computer.program[index + 1]);
         }
+        counter += 1;
+        //println!("A: {}", computer.registers.a);
+    }
+    //We know that A can only ever be changed by register adv. It will NEVER use values in
+    //any other register bcs then the solution would be too small.
+
+    let mut min_a: u128 = 8i128.pow(loops - 1) as u128;
+    println!("Min A is {}", min_a);
+    let mut exps: Vec<u32> = Vec::new();
+    for i in (0..input.program.len()).rev(){
+        let exp = find_exp(min_a, input, i);
+        let num = find_first_occurrance(min_a, input, i, exp);
+        let min = find_smallest_for_index(num, input, i, exp);
+        println!("We found at {}", min);
+        min_a = min;
+        //println!("The minimum for index {} is {}", i, min);
+        //min_a = min;
+        //156985291375904 w num
+        //156985291375904 w min
+        let mut computer = Computer {
+            registers: input.registers.clone(),
+            program: input.program.clone(),
+            index: input.index.clone(),
+            out: input.out.clone()
+        };
+        computer.registers.a = min_a;
+
+        while computer.index + 1 < computer.program.len(){
+            computer.choose_program();
+        }
+
+        println!("\nOUTPUT {:?}\n", computer.out);
     }
 
-    let mut min_a = div.pow(loops-1);
-    let mut two = div.pow(1);
-
-
-    computer.registers = input.registers.clone();
-    computer.registers.a = min_a;
-    computer.index = 0;
-    computer.out = vec![];
-    //println!("{:?}", computer.program);
-    while computer.index + 1 < computer.program.len(){
-        computer.choose_program();
-    }
-
-    let mut counter = 1;
-    let mut prev_out = computer.out.clone();
-    // loop {
-    //     computer.registers = input.registers.clone();
-    //     computer.registers.a = min_a + counter;
-    //     computer.index = 0;
-    //     computer.out = vec![];
-    //     //println!("{:?}", computer.program);
+    // let mut temp_a = min_a;
+    // while computer.out != input.program{
+    //     let mut computer = Computer {
+    //         registers: input.registers.clone(),
+    //         program: input.program.clone(),
+    //         index: input.index.clone(),
+    //         out: input.out.clone()
+    //     };
+    //     computer.registers.a = temp_a + 1;
     //     while computer.index + 1 < computer.program.len(){
     //         computer.choose_program();
     //     }
-    //     if computer.out == computer.program{break;}
-    //     counter += 1;
-    //     //println!("a is {}", min_a + counter);
     // }
 
-    println!("Trying to find something");
-    //Find how often each index repeats
-    for n in 0..computer.program.len() {
-        let mut var = 0;
-        let mut gap_a = vec![];
-        let mut gap_b: Vec<i128> = vec![];
-        let mut ahah = vec![];
-        loop {
-            computer.registers = input.registers.clone();
-            computer.registers.a = min_a + var;
-            computer.index = 0;
-            computer.out = vec![];
-            //println!("{:?}", computer.program);
+    min_a
+}
+
+fn find_first_occurrance(min_a: u128, input: &Computer, index: usize, exp: u32) -> u128 {
+    let step = 4u128.pow(exp);
+    let mut temp = min_a;
+
+    loop {
+        let mut computer = Computer {
+            registers: input.registers.clone(),
+            program: input.program.clone(),
+            index: input.index.clone(),
+            out: input.out.clone()
+        };
+        computer.registers.a = temp;
+
+        while computer.index + 1 < computer.program.len(){
+            computer.choose_program();
+        }
+        if input.program[index] == computer.out[index] {
+            return temp;
+        }
+
+        temp = temp + step;
+    }
+}
+fn find_smallest_for_index(min_a: u128, input: &Computer, index: usize, mut exp: u32) -> u128 {
+    let mut prev_output: Vec<u128> = vec![];
+    exp -= 1;
+    let mut step = 4u128.pow(exp);
+    let mut temp = min_a - step;
+   loop {
+        'inner: for _i in 0..16{
+            let mut computer = Computer {
+                registers: input.registers.clone(),
+                program: input.program.clone(),
+                index: input.index.clone(),
+                out: input.out.clone()
+            };
+            computer.registers.a = temp;
+
             while computer.index + 1 < computer.program.len(){
                 computer.choose_program();
             }
-            if computer.out[n] == computer.program[n] {
-                //println!("Found match for {n}");
-                //println!("{var} and {gap_prev}");
-                ahah.push(var);
-                if gap_a.len() < 2 {
-                    gap_a.push(var);
-                }
-                else {                
-                    let num = ahah.len() - 2;
-                    let newvar = var - ahah[num]; 
-                    gap_a.push(newvar);
-                    let l = gap_b.len();
-                    if l == 0 && newvar == gap_a[1]{
-                        gap_b.push(newvar);
-                    }
-                    else if gap_a[l+1] == newvar {
-                        gap_b.push(newvar);
-                        if gap_b == gap_a[1..l+1] && newvar == gap_b[0]{
-                            break;
-                        }
-                    }
-                    else if l != 0 {
-                        gap_b = vec![];
-                    }
-                }
-                //println!("A {:?}", gap_a);
-                //println!("B {:?}", gap_b);
+            //println!("{:?}", computer.out);
+
+            if input.program[index] != computer.out[index] {
+                temp = temp + step;
+                break 'inner;
             }
-            var += 1;
-            //println!("a is {}", min_a + counter);
+            temp = temp - step;
         }
-        println!("for index {n} the gap is {:?}", gap_a);
+
+        if step == 1 {return temp;}
+
+        step = step / 2;
+        temp = temp - step;
     }
+}
 
-    println!("OUT {:?}", computer.out);
-    println!("PRO {:?}", computer.program);
+fn find_exp(min_a: u128, input: &Computer, index: usize) -> u32{
+    let mut prev_output: Vec<u128> = vec![];
+    let mut step = 4u128.pow(1);
+    let mut exp = 1;
+    let mut temp = min_a;
+    //58640620148048
+    loop {
+        for _i in 0..16{
+            let mut computer = Computer {
+                registers: input.registers.clone(),
+                program: input.program.clone(),
+                index: input.index.clone(),
+                out: input.out.clone()
+            };
+            computer.registers.a = temp;
 
-    //Finding out how often the first number changes
+            while computer.index + 1 < computer.program.len(){
+                computer.choose_program();
+            }
+            //println!("{:?}", computer.out);
+            if prev_output.len() != 0 {
+                if prev_output[index] != computer.out[index] {
+                    println!("index {} took exp {} and val is {}", index, exp, temp);
+                    return exp;
+                }
+            }
+            prev_output = computer.out;
+            temp = temp + step;
+        }
 
-
-    min_a + counter
+        exp += 1;
+        step = 4u128.pow(exp);
+        temp = min_a + step;
+    }
 }
 
 #[cfg(test)]
@@ -290,7 +332,7 @@ mod tests {
 
     #[test]
     fn test_two() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day17_2").unwrap();
+        let test_input: String = fs::read_to_string("input/2024/day17_test2.txt").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec17_2(&input_filtered);
         assert_eq!(117440, ans);
@@ -298,7 +340,7 @@ mod tests {
 
     #[test]
     fn test_one() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day17").unwrap();
+        let test_input: String = fs::read_to_string("input/2024/day17_test1.txt").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec17_1(&input_filtered);
         assert_eq!("4,6,3,5,6,3,5,2,1,0", ans);
