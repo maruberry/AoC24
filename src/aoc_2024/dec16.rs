@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_large_two() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day16_large").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/test_input/day16_large").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec16_2(&input_filtered);
         assert_eq!(64, ans);
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn test_small_two() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day16_small").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/test_input/day16_small").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec16_2(&input_filtered);
         assert_eq!(45, ans);
@@ -122,7 +122,7 @@ mod tests {
 
     #[test]
     fn test_large() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day16_large").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/test_input/day16_large").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec16_1(&input_filtered);
         assert_eq!(11048, ans);
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn test_small() {
-        let test_input: String = fs::read_to_string("input/2024/test_input/day16_small").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/test_input/day16_small").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec16_1(&input_filtered);
         assert_eq!(7036, ans);

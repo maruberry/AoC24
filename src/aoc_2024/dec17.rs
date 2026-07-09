@@ -332,7 +332,7 @@ mod tests {
 
     #[test]
     fn test_two() {
-        let test_input: String = fs::read_to_string("input/2024/day17_test2.txt").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/day17_test2.txt").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec17_2(&input_filtered);
         assert_eq!(117440, ans);
@@ -340,7 +340,7 @@ mod tests {
 
     #[test]
     fn test_one() {
-        let test_input: String = fs::read_to_string("input/2024/day17_test1.txt").unwrap();
+        let test_input: String = fs::read_to_string("input/aoc_2024/day17_test1.txt").unwrap();
         let input_filtered = get_input(&test_input);
         let ans = dec17_1(&input_filtered);
         assert_eq!("4,6,3,5,6,3,5,2,1,0", ans);
