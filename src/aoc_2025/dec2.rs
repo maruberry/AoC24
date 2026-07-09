@@ -58,11 +58,11 @@ pub fn dec2_1(input: &Vec<Vec<u128>>) -> u128{
 pub fn dec2_2(input: &Vec<Vec<u128>>) -> u128{
     let mut answer: u128 = 0;
 
-    for (mut range_start, mut range_end) in input.iter().map(|range| (range[0], range[1])) {
-        let mut start_str = range_start.to_string();
-        let mut end_str = range_end.to_string();
-        let mut start_len = start_str.len();
-        let mut end_len = end_str.len();
+    for (range_start, range_end) in input.iter().map(|range| (range[0], range[1])) {
+        let start_str = range_start.to_string();
+        let end_str = range_end.to_string();
+        let start_len = start_str.len();
+        let end_len = end_str.len();
 
         let mut found: Vec<u128> = vec![];
 
