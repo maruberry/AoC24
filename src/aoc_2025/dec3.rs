@@ -22,10 +22,9 @@ pub fn dec3_1(input: &Vec<Vec<usize>>) -> usize{
 #[aoc(day3, part2)]
 pub fn dec3_2(input: &Vec<Vec<usize>>) -> u64{
     let mut answer: u64 = 0;
-    let mut pos = 0;
     let len = input[0].len();
     for line in input {
-        pos = 0;
+        let mut pos = 0;
         for i in 1..=12 {
             let max = line[pos..len - 12 + i].iter().max().unwrap();
             let pos_new = line[pos..len - 12 + i].iter().position(|x| x == max).unwrap() + 1;

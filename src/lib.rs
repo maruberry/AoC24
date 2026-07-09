@@ -2,6 +2,7 @@ mod aoc_2025 {
     mod dec1;
     mod dec2;
     mod dec3;
+    mod dec4;
 }
 
 
