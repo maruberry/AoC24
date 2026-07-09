@@ -30,7 +30,6 @@ pub fn dec3_2(input: &Vec<Vec<usize>>) -> u64{
             let max = line[pos..len - 12 + i].iter().max().unwrap();
             let pos_new = line[pos..len - 12 + i].iter().position(|x| x == max).unwrap() + 1;
             pos = pos + pos_new;
-            //println!("{}", *max as u64 * (10_u64.pow(12 - i as u32)));
             answer += *max as u64 * (10_u64.pow(12 - i as u32));
         }
 
